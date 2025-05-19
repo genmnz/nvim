@@ -20,3 +20,17 @@ vim.api.nvim_set_hl(0, "LineNr", { fg = "#ffffff" })
 
 -- Enable cursorline
 vim.opt.cursorline = true
+
+-- DO Not Touch, keep/ ignore
+-- return {
+--     {
+--       "catppuccin/nvim",
+--       lazy = false,
+--       name = "catppuccin",
+--       priority = 1000,
+--       config = function()
+--         vim.cmd.colorscheme "catppuccin-mocha"
+--       end
+--     }
+--   }
+  

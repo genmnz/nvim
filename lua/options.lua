@@ -1,5 +1,9 @@
 vim.g.maplocalleader = ","
 
+vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
+
+-- Icon configuration
+vim.opt.encoding = "utf-8"
 vim.opt.mouse = 'a'
 vim.opt.ignorecase = false
 vim.opt.number = true
@@ -19,8 +23,12 @@ vim.g.background = "light"
 vim.opt.clipboard = "unnamedplus"
 vim.opt.updatetime = 300
 vim.opt.timeoutlen = 500
+vim.opt.list = true
 
 
 vim.opt.termguicolors = true
 vim.opt.cursorline = true
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
+
+-- Set color for the current line number (vibrant red)
+vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ff0000", bold = true })

@@ -1,3 +1,4 @@
+-- Mason setup
 require('mason').setup({
     ui = {
         icons = {
@@ -8,33 +9,25 @@ require('mason').setup({
     }
 })
 
+-- Mason-LSPConfig setup
 require('mason-lspconfig').setup({
-    -- A list of servers to automatically install if they're not already installed
-    ensure_installed = { 'lua_ls', 'ts_ls' },
+    ensure_installed = { 'lua_ls', 'ts_ls', 'html', 'cssls', 'jsonls' },
 })
 
--- Set different settings for different languages' LSP
--- LSP list: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
--- How to use setup({}): https://github.com/neovim/nvim-lspconfig/wiki/Understanding-setup-%7B%7D
---     - the settings table is sent to the LSP
---     - on_attach: a lua callback function to run after LSP attaches to a given buffer
+-- LSPConfig
 local lspconfig = require('lspconfig')
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- Customized on_attach function
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+-- Diagnostic keymaps
+local opts_diag = { noremap = true, silent = true }
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts_diag)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts_diag)
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts_diag)
+vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts_diag)
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
+-- on_attach function
 local on_attach = function(client, bufnr)
-    -- Enable completion triggered by <c-x><c-o>
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
     local bufopts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
@@ -55,8 +48,54 @@ local on_attach = function(client, bufnr)
     end, bufopts)
 end
 
--- Configure each language
--- How to add LSP for a specific language?
--- 1. use `:Mason` to install corresponding LSP
--- 2. add configuration below
--- JavaScript/TypeScript configuration is handled in plugins/lsp-config.lua
+-- Configure LSP servers
+lspconfig.lua_ls.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = {
+        Lua = {
+            runtime = {
+                -- Tell the language server which version of Lua you're using (most likely LuaJIT in Neovim)
+                version = 'LuaJIT',
+            },
+            diagnostics = {
+                -- Get the language server to recognize the `vim` global
+                globals = {'vim'}
+            },
+            workspace = {
+                -- Make the server aware of Neovim runtime files
+                library = vim.api.nvim_get_runtime_file("", true),
+                checkThirdParty = false, -- Avoid issues with sumneko_lua_ls_nightly
+            },
+            -- Do not send telemetry data containing server info (project path etc.)
+            telemetry = {
+                enable = false,
+            },
+        }
+    }
+})
+
+lspconfig.ts_ls.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+})
+
+lspconfig.html.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+})
+
+lspconfig.cssls.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+})
+
+lspconfig.jsonls.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+})
+
+-- This file is loaded via require('lsp') in init.lua.
+-- It needs to return a table for pcall to work correctly if init.lua uses it.
+return {}
+    

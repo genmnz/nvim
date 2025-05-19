@@ -14,13 +14,6 @@ vim.opt.rtp:prepend(lazypath)
 -- Explicit plugin specs you want to always include
 local extra_plugins = {
   "bluz71/vim-moonfly-colors",
-  --[["fnune/standard",
-  lazy = false,
-  priority = 1000,
-  config = function()
-    require("standard").setup({})
-    vim.cmd("colorscheme standard")
-  end,]]
   {
     'saghen/blink.cmp',
     dependencies = { 'rafamadriz/friendly-snippets' },
