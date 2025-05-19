@@ -1,14 +1,14 @@
--- Disable treesitter compiler warnings before any other code runs
-vim.g.ts_nocheck = true
-vim.g.nvim_treesitter_no_c_compiler = true
-vim.g.loaded_treesitter = true
+-- Load error suppression before anything else
+require('suppress_errors')
 
 -- Set up error handling for startup
-local status_ok = true
 local function safe_require(module)
-  status_ok, _ = pcall(require, module)
+  local status_ok, err = pcall(require, module)
   if not status_ok then
-    vim.notify('Error loading ' .. module, vim.log.levels.WARN)
+    -- Only show non-C compiler errors
+    if type(err) == "string" and not err:match("No C compiler found") then
+      vim.notify('Error loading ' .. module .. ': ' .. err, vim.log.levels.WARN)
+    end
   end
 end
 
